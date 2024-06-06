@@ -61,15 +61,14 @@ Ikomia Studio offers a friendly UI with the same features as the API.
 - For additional guidance on getting started with Ikomia Studio, check out [this blog post](https://www.ikomia.ai/blog/how-to-get-started-with-ikomia-studio).
 
 ## :pencil: Set algorithm parameters
-- **model_name** (str) - default 'google/owlv2-base-patch16-ensemble':  The OWLv2 algorithm has  different checkpoint models,
+- **model_name** (str) - default 'google/owlv2-base-patch16-ensemble':  The OWLv2 algorithm has different checkpoint models,
     - google/owlv2-base-patch16-ensemble"
     - google/owlv2-base-patch16"
     - google/owlv2-base-patch16-finetuned"
     - google/owlv2-large-patch14"
     - google/owlv2-large-patch14-finetuned"
-- **prompt** (str) - default 'car . person . dog .': Text prompt for the model
-- **conf_thres** (float) - default '0.35': Box threshold for the prediction‍
-- **conf_thres_text** (float) - default '0.25': Text threshold for the prediction
+- **prompt** (str) - default 'a cat, remote control': Text prompt for the model
+- **conf_thres** (float) - default '0.2': Box threshold for the prediction‍
 - **cuda** (bool): If True, CUDA-based inference (GPU). If False, run on CPU
 
 ```python
@@ -111,7 +110,7 @@ wf = Workflow()
 algo = wf.add_task(name="infer_owl_v2", auto_connect=True)
 
 # Run on your image  
-wf.run_on(url="example_image.png")
+wf.run_on(url='http://images.cocodataset.org/val2017/000000039769.jpg')
 
 # Iterate over outputs
 for output in algo.get_outputs():
