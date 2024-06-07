@@ -64,7 +64,7 @@ class InferOwlV2Widget(core.CWorkflowTaskWidget):
         self.parameters.cuda = self.parameters.cuda
         self.parameters.conf_thres = self.spin_conf_thres_box.value()
         self.parameters.prompt = self.edit_prompt.text()
-        self.parameters.update = True
+        # self.parameters.update = True
 
         # Send signal to launch the process
         self.emit_apply(self.parameters)

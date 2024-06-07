@@ -23,11 +23,12 @@ class InferOwlV2Param(core.CWorkflowTaskParam):
     def set_values(self, params):
         # Set parameters values from Ikomia application
         # Parameters values are stored as string and accessible like a python dict
+        self.update = (self.model_name != params["model_name"] or \
+                       self.cuda != utils.strtobool(params["cuda"]))
         self.model_name = params["model_name"]
         self.cuda = utils.strtobool(params["cuda"])
         self.conf_thres = float(params["conf_thres"])
-        self.prompt = params["prompt"]
-        self.update = True
+        self.prompt = params["prompt"] 
 
     def get_values(self):
         # Send parameters values to Ikomia application
@@ -49,9 +50,6 @@ class InferOwlV2(dataprocess.CObjectDetectionTask):
     def __init__(self, name, param):
         dataprocess.CObjectDetectionTask.__init__(self, name)
         # Add input/output of the algorithm here
-        # Example :  self.add_input(dataprocess.CImageIO())
-        #           self.add_output(dataprocess.CImageIO())
-
         # Create parameters object
         if param is None:
             self.set_param_object(InferOwlV2Param())
@@ -124,9 +122,8 @@ class InferOwlV2(dataprocess.CObjectDetectionTask):
         # Get image from input/output (numpy array):
         src_image = input.get_image()
 
-        if self.model is None:
-            if self.model_name != param.model_name:
-                self.load_model()
+        if self.model is None or param.update:
+            self.load_model()
 
         # Process input
         texts = [param.prompt.split(",")]
@@ -167,10 +164,9 @@ class InferOwlV2(dataprocess.CObjectDetectionTask):
         # set class name
         classe_names = texts[0]
         self.set_names(classe_names)
-
         # Add object output
         for i, (box, score, label) in enumerate(zip(boxes, scores, labels)):
-            cls = int(label.item())
+            cls = int(label.item())        
             box = [round(i, 2) for i in box.tolist()]
             x1, y1, x2, y2 = tuple(box)
             x1 = x1 / width_ratio
