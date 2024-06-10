@@ -61,7 +61,6 @@ class InferOwlV2(dataprocess.CObjectDetectionTask):
         self.model_name = None
         self.processor = None
         self.device = torch.device("cpu")
-        torch.set_grad_enabled(False)
 
     def get_progress_steps(self):
         # Function returning the number of progress steps for this algorithm
@@ -130,7 +129,8 @@ class InferOwlV2(dataprocess.CObjectDetectionTask):
         inputs = self.processor(text=texts, images=src_image, return_tensors="pt").to(self.device)
 
         # Inference
-        outputs = self.model(**inputs)
+        with torch.no_grad():
+            outputs = self.model(**inputs)
 
         # Determine the width and height ratios
         w, h = src_image.shape[:2]
