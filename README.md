@@ -23,6 +23,8 @@
 Run OWLv2 a zero-shot text-conditioned object detection model.
 ![OWL](https://raw.githubusercontent.com/Ikomia-hub/infer_owl_v2/main/images/output.jpg)
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Ikomia-dev/notebooks/blob/main/examples/HOWTO_run_OWLv2_with_Ikomia_API.ipynb)
+
 ## :rocket: Use with Ikomia API
 
 #### 1. Install Ikomia API
