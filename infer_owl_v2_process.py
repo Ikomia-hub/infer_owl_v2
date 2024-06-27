@@ -28,7 +28,7 @@ class InferOwlV2Param(core.CWorkflowTaskParam):
         self.model_name = params["model_name"]
         self.cuda = utils.strtobool(params["cuda"])
         self.conf_thres = float(params["conf_thres"])
-        self.prompt = params["prompt"] 
+        self.prompt = params["prompt"]
 
     def get_values(self):
         # Send parameters values to Ikomia application
@@ -166,7 +166,7 @@ class InferOwlV2(dataprocess.CObjectDetectionTask):
         self.set_names(classe_names)
         # Add object output
         for i, (box, score, label) in enumerate(zip(boxes, scores, labels)):
-            cls = int(label.item())        
+            cls = int(label.item())
             box = [round(i, 2) for i in box.tolist()]
             x1, y1, x2, y2 = tuple(box)
             x1 = x1 / width_ratio
@@ -197,7 +197,7 @@ class InferOwlV2Factory(dataprocess.CTaskFactory):
         self.info.short_description = "Run OWLv2 a zero-shot text-conditioned object detection model"
         # relative path -> as displayed in Ikomia Studio algorithm tree
         self.info.path = "Plugins/Python/Detection"
-        self.info.version = "1.0.0"
+        self.info.version = "1.1.0"
         self.info.icon_path = "images/logo.png"
         self.info.authors = "Minderer, M., Gritsenko, A., & Houlsby, N."
         self.info.article = "Scaling Open-Vocabulary Object Detection"
