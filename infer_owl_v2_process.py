@@ -1,12 +1,17 @@
 import copy
-from ikomia import core, dataprocess, utils
-from transformers import Owlv2Processor, Owlv2ForObjectDetection
-import torch
 import os
-from transformers.utils.constants import OPENAI_CLIP_MEAN, OPENAI_CLIP_STD
-from PIL import Image
-import numpy as np
 
+import torch
+import numpy as np
+from PIL import Image
+
+from ikomia import core, dataprocess, utils
+
+from transformers import Owlv2Processor, Owlv2ForObjectDetection
+from transformers.utils.constants import OPENAI_CLIP_MEAN, OPENAI_CLIP_STD
+
+
+# --------------------
 # - Class to handle the algorithm parameters
 # - Inherits PyCore.CWorkflowTaskParam from Ikomia API
 # --------------------
@@ -23,8 +28,7 @@ class InferOwlV2Param(core.CWorkflowTaskParam):
     def set_values(self, params):
         # Set parameters values from Ikomia application
         # Parameters values are stored as string and accessible like a python dict
-        self.update = (self.model_name != params["model_name"] or \
-                       self.cuda != utils.strtobool(params["cuda"]))
+        self.update = (self.model_name != params["model_name"] or self.cuda != utils.strtobool(params["cuda"]))
         self.model_name = params["model_name"]
         self.cuda = utils.strtobool(params["cuda"])
         self.conf_thres = float(params["conf_thres"])
@@ -33,11 +37,12 @@ class InferOwlV2Param(core.CWorkflowTaskParam):
     def get_values(self):
         # Send parameters values to Ikomia application
         # Create the specific dict structure (string container)
-        params = {}
-        params["model_name"] = str(self.model_name)
-        params["prompt"] = str(self.prompt)
-        params["conf_thres"] = str(self.conf_thres)
-        params["cuda"] = str(self.cuda)
+        params = {
+            "model_name": str(self.model_name),
+            "prompt": str(self.prompt),
+            "conf_thres": str(self.conf_thres),
+            "cuda": str(self.cuda)
+        }
         return params
 
 
@@ -78,8 +83,7 @@ class InferOwlV2(dataprocess.CObjectDetectionTask):
 
     def load_model(self):
         param = self.get_param_object()
-        self.device = torch.device(
-                "cuda") if param.cuda and torch.cuda.is_available() else torch.device("cpu")
+        self.device = torch.device("cuda") if param.cuda and torch.cuda.is_available() else torch.device("cpu")
         self.model_name = param.model_name
         try:
             self.processor = Owlv2Processor.from_pretrained(
@@ -107,6 +111,10 @@ class InferOwlV2(dataprocess.CObjectDetectionTask):
 
         param.update = False
 
+    def init_long_process(self):
+        self.load_model()
+        super().init_long_process()
+
     def run(self):
         # Main function of your algorithm
         # Call begin_task_run() for initialization
@@ -116,12 +124,12 @@ class InferOwlV2(dataprocess.CObjectDetectionTask):
         param = self.get_param_object()
 
         # Get input :
-        input = self.get_input(0)
+        img_input = self.get_input(0)
 
         # Get image from input/output (numpy array):
-        src_image = input.get_image()
+        src_image = img_input.get_image()
 
-        if self.model is None or param.update:
+        if param.update:
             self.load_model()
 
         # Process input
@@ -162,8 +170,9 @@ class InferOwlV2(dataprocess.CObjectDetectionTask):
         boxes, scores, labels = results[0]["boxes"], results[0]["scores"], results[0]["labels"]
 
         # set class name
-        classe_names = texts[0]
-        self.set_names(classe_names)
+        class_names = texts[0]
+        self.set_names(class_names)
+
         # Add object output
         for i, (box, score, label) in enumerate(zip(boxes, scores, labels)):
             cls = int(label.item())
@@ -197,7 +206,8 @@ class InferOwlV2Factory(dataprocess.CTaskFactory):
         self.info.short_description = "Run OWLv2 a zero-shot text-conditioned object detection model"
         # relative path -> as displayed in Ikomia Studio algorithm tree
         self.info.path = "Plugins/Python/Detection"
-        self.info.version = "1.1.1"
+        self.info.version = "1.2.0"
+        self.info.min_ikomia_version = "0.15.0"
         self.info.icon_path = "images/logo.png"
         self.info.authors = "Minderer, M., Gritsenko, A., & Houlsby, N."
         self.info.article = "Scaling Open-Vocabulary Object Detection"
@@ -215,6 +225,11 @@ class InferOwlV2Factory(dataprocess.CTaskFactory):
         self.info.keywords = "Zero-shot, CLIP, ViT, PyTorch"
         self.info.algo_type = core.AlgoType.INFER
         self.info.algo_tasks = "OBJECT_DETECTION"
+        # Min hardware config
+        self.info.hardware_config.min_cpu = 4
+        self.info.hardware_config.min_ram = 16
+        self.info.hardware_config.gpu_required = False
+        self.info.hardware_config.min_vram = 6
 
     def create(self, param=None):
         # Create algorithm object
