@@ -208,6 +208,7 @@ class InferOwlV2Factory(dataprocess.CTaskFactory):
         self.info.path = "Plugins/Python/Detection"
         self.info.version = "1.3.0"
         self.info.min_ikomia_version = "0.16.0"
+        self.info.max_python_version = "3.12"
         self.info.icon_path = "images/logo.png"
         self.info.authors = "Minderer, M., Gritsenko, A., & Houlsby, N."
         self.info.article = "Scaling Open-Vocabulary Object Detection"
