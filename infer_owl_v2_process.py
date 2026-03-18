@@ -206,8 +206,8 @@ class InferOwlV2Factory(dataprocess.CTaskFactory):
         self.info.short_description = "Run OWLv2 a zero-shot text-conditioned object detection model"
         # relative path -> as displayed in Ikomia Studio algorithm tree
         self.info.path = "Plugins/Python/Detection"
-        self.info.version = "1.2.1"
-        self.info.min_ikomia_version = "0.15.0"
+        self.info.version = "1.3.0"
+        self.info.min_ikomia_version = "0.16.0"
         self.info.icon_path = "images/logo.png"
         self.info.authors = "Minderer, M., Gritsenko, A., & Houlsby, N."
         self.info.article = "Scaling Open-Vocabulary Object Detection"
